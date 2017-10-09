@@ -1,6 +1,6 @@
 {
   "name": "renge",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A discord bot framework",
   "main": "index.js",
   "scripts": {

@@ -28,6 +28,10 @@ class Command {
     let text = fs.readFileSync(`${this.context.name}/${name}.handlebars`);
     this.context.templates[name] = Handlebars.compile(text);
   }
+
+  splitCmd(string) {
+    return string.split(' ');
+  };
 }
 
 module.exports = Command;

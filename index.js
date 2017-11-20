@@ -25,6 +25,7 @@ class Renge {
     this.commandRegistry = [];
     this.sublevelRegistry = {};
     this.discordClient = new Discord.Client();
+    this._filter = null;
   }
 
   setRootHandler(handler) {
@@ -32,6 +33,18 @@ class Renge {
     this.baseApp.get("/", function(req, res) {
       res.send("Oh hello there");
     });
+  }
+
+  filter(command) {
+    if (typeof command === 'function') {
+      this._filter = command;
+    }
+
+    if (this._filter === null) {
+      return true;
+    }
+
+    return this._filter(command);
   }
 
   buildContext(name, dbName) {

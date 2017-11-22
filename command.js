@@ -8,11 +8,21 @@ class Command {
     context.log("Registering...");
     this.context = context;
     context.templates = [];
+    this.subCommandMap = {};
+  }
+
+  mountSubCommand(matcher, command) {
+    this.subCommandMap[matcher] = command;
   }
 
   tick() {
     // Handle scheduled jobs based on redis job state
     throw "Must be implemented by subclass!";
+  }
+
+  // Assumes user is using our Message class to wrap discordJS messages
+  triggerSubCommand(message) {
+    return this.subCommandMap[message.head](message.popHead);
   }
 
   filter(command) {
@@ -29,7 +39,9 @@ class Command {
     this.context.templates[name] = Handlebars.compile(text);
   }
 
+  // TODO Deprecated - Remove this in future release
   splitCmd(string) {
+    console.log("Command#splitCmd is DEPRECATED");
     return string.split(' ');
   };
 }

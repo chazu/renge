@@ -61,11 +61,11 @@ describe('Message', () => {
     });
   });
 
-  describe('popHead', () => {
+  describe('messageFromTail', () => {
     it('should instantiate a new Message', () => {
       let testMessage = new Message(discordJSMessage);
 
-      let forSubCommand = testMessage.popHead();
+      let forSubCommand = testMessage.messageFromTail();
       expect(forSubCommand).to.be.an.instanceof(Message);
       expect(forSubCommand).not.to.equal(testMessage);
       expect(forSubCommand.parsed).to.deep.equal(['block', 'info']);

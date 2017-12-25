@@ -29,7 +29,7 @@ class Message {
     return this._parsedCommand;
   }
 
-  popHead() {
+  messageFromTail() {
     let [head, ...tail] = this.parsed;
     return new Message(this._message, tail);
   }

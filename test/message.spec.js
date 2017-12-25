@@ -12,6 +12,7 @@ describe('Message', () => {
         content: 'tama block info'
       };
     });
+
     it('should split the messages content if no second arg', () => {
       let testMessage = new Message(discordJSMessage);
 

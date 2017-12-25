@@ -1,13 +1,15 @@
 'use strict';
 const Handlebars = require('handlebars');
 const fs         = require('fs');
+const Message    = require('./message');
 
 class Command {
 
   constructor(context) {
-    context.log("Registering...");
+    console.log("Registering...");
     this.context = context;
-    context.templates = [];
+    this.templates = [];
+    this.subcommands = {};
   }
 
   tick() {
@@ -20,18 +22,34 @@ class Command {
     throw "Must be implemented by subclass!";    
   }
 
+  dispatch(message) {
+    // TODO The subcomand shouldn't have to peel
+    // its own command off of the message - dispatch
+    // should handle that, right?
+    let forSub = message.messageFromTail();
+    let subCommandInstance = new this.subcommands[forSub.head];
+    return subCommandInstance.process(forSub);
+  }
+  
   process(message) {
-    this.context.message = message;
+    if (typeof message === Message) {
+      this.dispatch();
+    };
   }
 
-  useTemplate(name) {
-    let text = fs.readFileSync(`${this.context.name}/${name}.handlebars`);
-    this.context.templates[name] = Handlebars.compile(text);
+  registerTemplate(template, name) {
+    this.templates[name] = template;
   }
 
+  // DEPRECATED - in here for BC but should be redundant
+  // since we now have Message class.
   splitCmd(string) {
     return string.split(' ');
   };
+
+  registerSub(command, name) {
+    this.subcommands[name] = command;
+  }
 }
 
 module.exports = Command;

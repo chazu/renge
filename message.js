@@ -1,5 +1,5 @@
 class Message {
-
+  'tama wallet addr'
   constructor(msg, next = null) {
     this._message = msg;
 

@@ -6,7 +6,7 @@ const Discord      = require('discord.js');
 const logger       = require('./logger');
 const express      = require('express');
 const level        = require('level');
-const levelPromise= require('level-promise');
+const levelPromise = require('level-promise');
 const sublevel     = require('sublevel');
 const request      = require('request-promise');
 const P            = require('bluebird');
@@ -26,6 +26,7 @@ class Renge {
     this.sublevelRegistry = {};
     this.discordClient = new Discord.Client();
     this._filter = null;
+    this.errorHandler = null;
   }
 
   setRootHandler(handler) {
@@ -33,6 +34,10 @@ class Renge {
     this.baseApp.get("/", function(req, res) {
       res.send("Oh hello there");
     });
+  }
+
+  setErrorHandler(handler) {
+    this.errorHandler = handler;
   }
 
   filter(command) {
@@ -72,11 +77,12 @@ class Renge {
     let instName, instDbNamespace;
     instName        = !!name        ? name        : cmdClass.constructor.name;
     instDbNamespace = !!dbNamespace ? dbNamespace : instName;
-    
+
     this.commandRegistry.push(new cmdClass(this.buildContext(instName, instDbNamespace)));
   }
 
   run() {
+
     const t = this;
     this.discordClient.on('ready', () => {
       console.log("Bot Ready");
@@ -84,6 +90,7 @@ class Renge {
 
     this.discordClient.on('message', (msg) => {
       console.log("Message => ".cyan, msg.content);
+      if (msgIsCommand(msg))
       _.each(this.commandRegistry, (cmd) => {
         if (cmd.filter(msg)) {
           console.log(`Match => ${cmd.context.name}`.green);
@@ -100,6 +107,11 @@ class Renge {
       });
       console.log("Renge is listening...");
     });
+  }
+
+  msgIsCommand(msg) {
+    return _.map(msg.mentions, (x) => x.id)
+      .indexOf(this.user.id) !== -1;
   }
 }
 

@@ -27,10 +27,10 @@ class Renge {
     this.discordClient = new Discord.Client();
     this._filter = null;
     this.errorHandler = null;
+    this.name = config.name;
   }
 
   setRootHandler(handler) {
-    // TODO Actually implement this
     this.baseApp.get("/", function(req, res) {
       res.send("Oh hello there");
     });
@@ -91,6 +91,10 @@ class Renge {
     this.discordClient.on('message', (msg) => {
       console.log("Message => ".cyan, msg.content);
       if (msgIsCommand(msg))
+
+        // Wrap the command in our own utility class
+        // and get rid of the mention by making new from tail...?(ugly i know)
+        msg = new Message(msg).messageFromTail();
       _.each(this.commandRegistry, (cmd) => {
         if (cmd.filter(msg)) {
           console.log(`Match => ${cmd.context.name}`.green);
@@ -110,8 +114,8 @@ class Renge {
   }
 
   msgIsCommand(msg) {
-    return _.map(msg.mentions, (x) => x.id)
-      .indexOf(this.user.id) !== -1;
+    // TODO Handle mentions (at message start) here as well
+    return msg.content.split(' ')[0].toLowerCase() == this.name.toLowerCase();
   }
 }
 

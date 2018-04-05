@@ -13,7 +13,7 @@ const P            = require('bluebird');
 const colors       = require('colors');
 
 const Command = require('./command');
-
+const Message = require('./message');
 // TODO build a context at message time so context
 // includes message
 

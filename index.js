@@ -90,7 +90,7 @@ class Renge {
 
     this.discordClient.on('message', (msg) => {
       console.log("Message => ".cyan, msg.content);
-      if (msgIsCommand(msg))
+      if (this.msgIsCommand(msg))
 
         // Wrap the command in our own utility class
         // and get rid of the mention by making new from tail...?(ugly i know)

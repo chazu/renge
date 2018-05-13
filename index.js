@@ -84,8 +84,9 @@ class Renge {
     } );
 
     this.discordClient.on('message', (msg) => {
-      if ( this.prefix && msg.content.startsWith(this.prefix) ) {
+      if ( this.prefix && msg.content.startsWith(this.prefix + ' ') ) {
         console.log("Message => ".cyan, msg.content);
+        msg.content = msg.content.slice(this.prefix.length + 2, msg.content.length + 1);
         _.each(this.commandRegistry, (cmd) => {
           if (cmd.filter(msg)) {
             console.log(`Match => ${cmd.context.name}`.green);

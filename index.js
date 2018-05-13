@@ -6,7 +6,7 @@ const Discord      = require('discord.js');
 const logger       = require('./logger');
 const express      = require('express');
 const level        = require('level');
-const levelPromise= require('level-promise');
+const levelPromise = require('level-promise');
 const sublevel     = require('sublevel');
 const request      = require('request-promise');
 const P            = require('bluebird');
@@ -86,7 +86,7 @@ class Renge {
     this.discordClient.on('message', (msg) => {
       if ( this.prefix && msg.content.startsWith(this.prefix + ' ') ) {
         console.log("Message => ".cyan, msg.content);
-        msg.content = msg.content.slice(this.prefix.length + 2, msg.content.length + 1);
+        msg.content = msg.content.slice(this.prefix.length + 1, msg.content.length + 1);
         _.each(this.commandRegistry, (cmd) => {
           if (cmd.filter(msg)) {
             console.log(`Match => ${cmd.context.name}`.green);

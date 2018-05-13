@@ -19,6 +19,7 @@ const Command = require('./command');
 
 class Renge {
   constructor(config) {
+    this.prefix = config.prefix;
     this.config = config;
     this.baseApp = express();
     this.db = levelPromise(level("./db"));
@@ -83,13 +84,15 @@ class Renge {
     } );
 
     this.discordClient.on('message', (msg) => {
-      console.log("Message => ".cyan, msg.content);
-      _.each(this.commandRegistry, (cmd) => {
-        if (cmd.filter(msg)) {
-          console.log(`Match => ${cmd.context.name}`.green);
-          cmd.process(msg);
-        }
-      });
+      if ( this.prefix && msg.content.startsWith(this.prefix) ) {
+        console.log("Message => ".cyan, msg.content);
+        _.each(this.commandRegistry, (cmd) => {
+          if (cmd.filter(msg)) {
+            console.log(`Match => ${cmd.context.name}`.green);
+            cmd.process(msg);
+          }
+        });
+      }
     });
 
     t.baseApp.listen(t.config.port || 1337, function() {

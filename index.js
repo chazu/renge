@@ -11,11 +11,14 @@ const sublevel     = require('sublevel');
 const request      = require('request-promise');
 const P            = require('bluebird');
 const colors       = require('colors');
+const EventEmitter = require('events');
 
 const Command = require('./command');
 
 // TODO build a context at message time so context
 // includes message
+
+const allMessagesEmitter = new EventEmitter();
 
 class Renge {
   constructor(config) {
@@ -65,7 +68,8 @@ class Renge {
       db: newSublevel,
       dbRegistry: this.sublevelRegistry,
       log: logger(name),
-      helpers: {}
+      helpers: {},
+      allMessages: allMessagesEmitter
     };
   }
 
@@ -73,8 +77,9 @@ class Renge {
     let instName, instDbNamespace;
     instName        = !!name        ? name        : cmdClass.constructor.name;
     instDbNamespace = !!dbNamespace ? dbNamespace : instName;
-    
-    this.commandRegistry.push(new cmdClass(this.buildContext(instName, instDbNamespace)));
+
+    const cmdInstance = new cmdClass(this.buildContext(instName, instDbNamespace));
+    this.commandRegistry.push(cmdInstance);
   }
 
   run() {
@@ -84,6 +89,8 @@ class Renge {
     } );
 
     this.discordClient.on('message', (msg) => {
+      allMessagesEmitter.emit('message', msg);
+
       if ( this.prefix && msg.content.startsWith(this.prefix + ' ') ) {
         console.log("Message => ".cyan, msg.content);
         msg.content = msg.content.slice(this.prefix.length + 1, msg.content.length + 1);
